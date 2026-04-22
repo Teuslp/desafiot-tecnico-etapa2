@@ -154,37 +154,37 @@ export default function AdminDashboardPage() {
                   <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Usuários</p>
                   <h3 className="text-3xl font-black text-gov-darkBlue mt-1">{overview.totalUsers || 0}</h3>
                 </div>
-                <div className="w-12 h-12 bg-blue-50 text-gov-blue flex items-center justify-center rounded-full">
+                <div className="w-12 h-12 bg-gov-blue text-white flex items-center justify-center rounded-full shadow-inner">
                   <i className="fas fa-users text-xl"></i>
                 </div>
               </div>
 
-              <div className="bg-white p-6 border-t-4 border-gov-green rounded shadow-sm flex items-center justify-between">
+              <div className="bg-white p-6 border-t-4 border-gov-blue rounded shadow-sm flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Produtos</p>
                   <h3 className="text-3xl font-black text-gov-darkBlue mt-1">{overview.totalProducts || 0}</h3>
                 </div>
-                <div className="w-12 h-12 bg-green-50 text-gov-green flex items-center justify-center rounded-full">
+                <div className="w-12 h-12 bg-gov-blue text-white flex items-center justify-center rounded-full shadow-inner">
                   <i className="fas fa-box-open text-xl"></i>
                 </div>
               </div>
 
-              <div className="bg-white p-6 border-t-4 border-gov-yellow rounded shadow-sm flex items-center justify-between">
+              <div className="bg-white p-6 border-t-4 border-gov-blue rounded shadow-sm flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Categorias</p>
                   <h3 className="text-3xl font-black text-gov-darkBlue mt-1">{overview.totalCategories || 0}</h3>
                 </div>
-                <div className="w-12 h-12 bg-yellow-50 text-yellow-600 flex items-center justify-center rounded-full">
+                <div className="w-12 h-12 bg-gov-blue text-white flex items-center justify-center rounded-full shadow-inner">
                   <i className="fas fa-tags text-xl"></i>
                 </div>
               </div>
 
-              <div className="bg-white p-6 border-t-4 border-gov-red rounded shadow-sm flex items-center justify-between">
+              <div className="bg-white p-6 border-t-4 border-gov-blue rounded shadow-sm flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Favoritados</p>
                   <h3 className="text-3xl font-black text-gov-darkBlue mt-1">{(overview as any).totalFavorites || 0}</h3>
                 </div>
-                <div className="w-12 h-12 bg-red-50 text-gov-red flex items-center justify-center rounded-full">
+                <div className="w-12 h-12 bg-gov-blue text-white flex items-center justify-center rounded-full shadow-inner">
                   <i className="fas fa-heart text-xl"></i>
                 </div>
               </div>
@@ -362,7 +362,7 @@ export default function AdminDashboardPage() {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded shadow-lg w-full max-w-md border border-gov-border">
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t">
+            <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-white rounded-t">
               <h3 className="text-lg font-bold text-gov-darkBlue">Cadastrar Novo Usuário</h3>
               <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-red-500 font-bold">✕</button>
             </div>
