@@ -35,6 +35,11 @@ export class ProductsController {
     return this.productsService.create(createProductDto, req.user.id, imageUrl);
   }
 
+  @Get('favorites')
+  getFavorites(@Request() req) {
+    return this.productsService.getFavorites(req.user.id);
+  }
+
   @Get()
   findAll(
     @Query('page') page?: string,

@@ -152,4 +152,22 @@ export class ProductsService {
 
     return { message: 'Produto desfavoritado com sucesso' };
   }
+
+  async getFavorites(userId: number) {
+    const favorites = await this.prisma.favorites.findMany({
+      where: { userId },
+      include: {
+        product: {
+          include: {
+            categories: true,
+            createdBy: { select: { id: true, name: true } },
+          }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    // Mapear para retornar apenas o formato do produto direto
+    return favorites.map(f => f.product);
+  }
 }
