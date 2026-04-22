@@ -342,7 +342,7 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setUsersSearch(e.target.value)}
                   className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-64"
                 />
-                <div className="flex gap-2 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                   <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Pesquisar</Button>
                   <Button type="button" onClick={() => setIsModalOpen(true)} className="!py-1.5 text-sm flex-1 md:flex-none justify-center">
                     + Novo Usuário
@@ -389,7 +389,7 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setProductsSearch(e.target.value)}
                   className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-64"
                 />
-                <div className="flex gap-2 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                   <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Pesquisar</Button>
                   <Button type="button" onClick={() => router.push('/dashboard/products/new')} className="!py-1.5 text-sm flex-1 md:flex-none justify-center">
                     + Novo Produto
@@ -437,7 +437,7 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setReportsSearch(e.target.value)}
                   className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-48"
                 />
-                <div className="flex gap-2 w-full md:w-auto">
+                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                   <select
                     value={reportsMethod}
                     onChange={(e) => { setReportsMethod(e.target.value); setReportsPage(1); }}
@@ -449,10 +449,12 @@ export default function AdminDashboardPage() {
                     <option value="PATCH">PATCH</option>
                     <option value="DELETE">DELETE</option>
                   </select>
-                  <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Filtrar</Button>
-                  <button type="button" onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded text-sm transition-colors flex items-center justify-center gap-1.5 md:flex-none flex-1">
-                    <i className="fas fa-file-csv"></i> <span className="hidden md:inline">Exportar</span>
-                  </button>
+                  <div className="flex gap-2 w-full sm:w-auto">
+                    <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Filtrar</Button>
+                    <button type="button" onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded text-sm transition-colors flex items-center justify-center gap-1.5 flex-1 md:flex-none">
+                      <i className="fas fa-file-csv"></i> <span className="hidden md:inline">Exportar</span>
+                    </button>
+                  </div>
                 </div>
               </form>
             </div>
