@@ -134,6 +134,51 @@ export default function AdminDashboardPage() {
     }
   };
 
+  const handleExportCSV = async () => {
+    try {
+      const res = await api.get('/admin/reports', {
+        params: { page: 1, limit: 10000, search: reportsSearch || undefined, method: reportsMethod || undefined }
+      });
+      
+      const dataToExport = res.data.data;
+      if (!dataToExport || dataToExport.length === 0) {
+        alert("Nenhum dado para exportar.");
+        return;
+      }
+
+      const headers = ['Log ID', 'Acao', 'Rota', 'Autor ID', 'Autor Nome', 'Autor Email', 'Data/Hora'];
+      const csvRows = [headers.join(',')];
+
+      for (const row of dataToExport) {
+        const rowData = [
+          row.id,
+          row.method,
+          row.route,
+          row.user?.id || 'Sistema',
+          row.user?.name || 'Sistema',
+          row.user?.email || 'N/A',
+          new Date(row.timestamp).toLocaleString('pt-BR')
+        ];
+        const escapedRow = rowData.map(val => `"${String(val).replace(/"/g, '""')}"`);
+        csvRows.push(escapedRow.join(','));
+      }
+
+      const csvString = csvRows.join('\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `relatorio_auditoria_${new Date().getTime()}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+    } catch (e) {
+      console.error("Erro ao exportar CSV:", e);
+      alert("Erro ao exportar relatório.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gov-gray flex flex-col relative">
       <Header />
@@ -405,6 +450,9 @@ export default function AdminDashboardPage() {
                     <option value="DELETE">DELETE</option>
                   </select>
                   <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Filtrar</Button>
+                  <button type="button" onClick={handleExportCSV} className="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded text-sm transition-colors flex items-center justify-center gap-1.5 md:flex-none flex-1">
+                    <i className="fas fa-file-csv"></i> <span className="hidden md:inline">Exportar</span>
+                  </button>
                 </div>
               </form>
             </div>
