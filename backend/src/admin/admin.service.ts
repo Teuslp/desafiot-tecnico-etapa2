@@ -9,11 +9,24 @@ export class AdminService {
     const totalUsers = await this.prisma.user.count();
     const totalProducts = await this.prisma.product.count();
     const totalCategories = await this.prisma.category.count();
+    const totalFavorites = await this.prisma.favorites.count();
+
+    const recentActivities = await this.prisma.auditLog.findMany({
+      take: 5,
+      orderBy: { timestamp: 'desc' },
+      include: {
+        user: {
+          select: { name: true, email: true },
+        },
+      },
+    });
 
     return {
       totalUsers,
       totalProducts,
       totalCategories,
+      totalFavorites,
+      recentActivities,
     };
   }
 
