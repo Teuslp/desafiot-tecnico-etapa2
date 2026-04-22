@@ -1,12 +1,20 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
 export function Header() {
   const router = useRouter();
+  const [role, setRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRole(Cookies.get('desafio.role') || 'STANDARD');
+  }, []);
 
   const handleLogout = () => {
     Cookies.remove('desafio.token');
+    Cookies.remove('desafio.role');
     router.push('/login');
   };
 
@@ -37,19 +45,33 @@ export function Header() {
 
       {/* Direita: Ações do Usuário */}
       <div className="flex items-center gap-4">
-        <button 
-          onClick={() => router.push('/dashboard/admin')}
-          className="text-sm font-semibold text-gov-darkBlue hover:underline"
-        >
-          ⚙️ Painel Admin
-        </button>
+        
+        {role === 'ADMIN' && (
+          <button 
+            onClick={() => router.push('/dashboard/admin')}
+            className="text-sm font-semibold text-gov-darkBlue hover:underline"
+          >
+            ⚙️ Painel Admin
+          </button>
+        )}
 
-        <button 
-          onClick={() => router.push('/dashboard/products/new')}
-          className="text-sm font-semibold text-gov-blue hover:underline"
-        >
-          + Novo Produto
-        </button>
+        {role === 'STANDARD' && (
+          <>
+            <button 
+              onClick={() => router.push('/dashboard/categories/new')}
+              className="text-sm font-semibold text-gov-green hover:underline"
+            >
+              + Nova Categoria
+            </button>
+
+            <button 
+              onClick={() => router.push('/dashboard/products/new')}
+              className="text-sm font-semibold text-gov-blue hover:underline"
+            >
+              + Novo Produto
+            </button>
+          </>
+        )}
 
         <div className="h-6 border-l border-gray-300 mx-2"></div>
 

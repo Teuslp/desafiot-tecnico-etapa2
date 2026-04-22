@@ -21,8 +21,18 @@ export default function LoginPage() {
 
     try {
       const response = await api.post('/auth/login', { email, password });
-      Cookies.set('desafio.token', response.data.access_token, { expires: 1 });
-      router.push('/dashboard');
+      
+      const token = response.data.access_token;
+      const role = response.data.user?.role || 'STANDARD'; // fallback caso não venha
+      
+      Cookies.set('desafio.token', token, { expires: 1 });
+      Cookies.set('desafio.role', role, { expires: 1 });
+      
+      if (role === 'ADMIN') {
+        router.push('/dashboard/admin');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err: any) {
       setError(err.response?.data?.message || 'E-mail ou senha inválidos.');
     } finally {
