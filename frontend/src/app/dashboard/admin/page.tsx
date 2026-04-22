@@ -139,34 +139,34 @@ export default function AdminDashboardPage() {
       <Header />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col items-start justify-between gap-2 md:gap-4">
           <div>
-            <h2 className="text-3xl font-bold text-gov-darkBlue mb-2">Painel de Administração</h2>
-            <p className="text-gray-600">Visão global e gerenciamento do sistema.</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gov-darkBlue mb-2">Painel de Administração</h2>
+            <p className="text-gray-600 text-sm md:text-base">Visão global e gerenciamento do sistema.</p>
           </div>
         </div>
 
-        <div className="flex border-b border-gray-300 mb-6 overflow-x-auto whitespace-nowrap">
+        <div className="flex border-b border-gray-300 mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide">
           <button
-            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'overview' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            className={`px-3 py-2 md:px-6 md:py-3 font-bold text-xs md:text-sm transition-colors flex items-center gap-1 md:gap-2 ${activeTab === 'overview' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
             onClick={() => setActiveTab('overview')}
           >
             <i className="fas fa-chart-line"></i> Visão Geral
           </button>
           <button
-            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'users' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            className={`px-3 py-2 md:px-6 md:py-3 font-bold text-xs md:text-sm transition-colors flex items-center gap-1 md:gap-2 ${activeTab === 'users' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
             onClick={() => setActiveTab('users')}
           >
             <i className="fas fa-users"></i> Gestão de Usuários
           </button>
           <button
-            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'products' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            className={`px-3 py-2 md:px-6 md:py-3 font-bold text-xs md:text-sm transition-colors flex items-center gap-1 md:gap-2 ${activeTab === 'products' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
             onClick={() => setActiveTab('products')}
           >
             <i className="fas fa-box-open"></i> Gestão de Produtos
           </button>
           <button
-            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'reports' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            className={`px-3 py-2 md:px-6 md:py-3 font-bold text-xs md:text-sm transition-colors flex items-center gap-1 md:gap-2 ${activeTab === 'reports' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
             onClick={() => setActiveTab('reports')}
           >
             <i className="fas fa-clipboard-list"></i> Auditoria
@@ -289,7 +289,7 @@ export default function AdminDashboardPage() {
             <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h3 className="text-xl font-bold text-gov-darkBlue">Lista de Usuários</h3>
 
-              <form onSubmit={handleUsersSearch} className="flex gap-2 w-full md:w-auto">
+              <form onSubmit={handleUsersSearch} className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                 <input
                   type="text"
                   placeholder="Pesquisar por nome ou email..."
@@ -297,15 +297,17 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setUsersSearch(e.target.value)}
                   className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-64"
                 />
-                <Button type="submit" className="!py-1.5 text-sm">Pesquisar</Button>
-                <Button type="button" onClick={() => setIsModalOpen(true)} className="!py-1.5 text-sm ml-4">
-                  + Novo Usuário
-                </Button>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Pesquisar</Button>
+                  <Button type="button" onClick={() => setIsModalOpen(true)} className="!py-1.5 text-sm flex-1 md:flex-none justify-center">
+                    + Novo Usuário
+                  </Button>
+                </div>
               </form>
             </div>
 
             {loading ? <p className="text-center py-4 text-gray-500">Carregando...</p> : (
-              <>
+              <div className="overflow-x-auto">
                 <Table
                   data={users}
                   keyExtractor={(item) => item.id}
@@ -324,7 +326,7 @@ export default function AdminDashboardPage() {
                   ]}
                 />
                 <Pagination currentPage={usersPage} totalPages={usersTotalPages} onPageChange={setUsersPage} />
-              </>
+              </div>
             )}
           </div>
         )}
@@ -334,7 +336,7 @@ export default function AdminDashboardPage() {
             <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <h3 className="text-xl font-bold text-gov-darkBlue">Catálogo de Produtos</h3>
 
-              <form onSubmit={handleProductsSearch} className="flex gap-2 w-full md:w-auto">
+              <form onSubmit={handleProductsSearch} className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
                 <input
                   type="text"
                   placeholder="Pesquisar por título..."
@@ -342,15 +344,17 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setProductsSearch(e.target.value)}
                   className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-64"
                 />
-                <Button type="submit" className="!py-1.5 text-sm">Pesquisar</Button>
-                <Button type="button" onClick={() => router.push('/dashboard/products/new')} className="!py-1.5 text-sm ml-4">
-                  + Novo Produto
-                </Button>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Pesquisar</Button>
+                  <Button type="button" onClick={() => router.push('/dashboard/products/new')} className="!py-1.5 text-sm flex-1 md:flex-none justify-center">
+                    + Novo Produto
+                  </Button>
+                </div>
               </form>
             </div>
 
             {loading ? <p className="text-center py-4 text-gray-500">Carregando...</p> : (
-              <>
+              <div className="overflow-x-auto">
                 <Table
                   data={products}
                   keyExtractor={(item) => item.id}
@@ -367,7 +371,7 @@ export default function AdminDashboardPage() {
                   ]}
                 />
                 <Pagination currentPage={productsPage} totalPages={productsTotalPages} onPageChange={setProductsPage} />
-              </>
+              </div>
             )}
           </div>
         )}
@@ -380,7 +384,7 @@ export default function AdminDashboardPage() {
                 <p className="text-sm text-gray-500">Trilha de auditoria das ações realizadas na API.</p>
               </div>
 
-              <form onSubmit={handleReportsSearch} className="flex gap-2 w-full md:w-auto items-center">
+              <form onSubmit={handleReportsSearch} className="flex flex-col md:flex-row gap-2 w-full md:w-auto md:items-center">
                 <input
                   type="text"
                   placeholder="Pesquisar rota ou ação..."
@@ -388,23 +392,25 @@ export default function AdminDashboardPage() {
                   onChange={(e) => setReportsSearch(e.target.value)}
                   className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-48"
                 />
-                <select
-                  value={reportsMethod}
-                  onChange={(e) => { setReportsMethod(e.target.value); setReportsPage(1); }}
-                  className="px-3 py-1.5 border border-gov-border rounded outline-none text-sm bg-white"
-                >
-                  <option value="">Todos os Métodos</option>
-                  <option value="POST">POST (Criação)</option>
-                  <option value="PUT">PUT (Atualização)</option>
-                  <option value="PATCH">PATCH (Atualização)</option>
-                  <option value="DELETE">DELETE (Exclusão)</option>
-                </select>
-                <Button type="submit" className="!py-1.5 text-sm">Filtrar</Button>
+                <div className="flex gap-2 w-full md:w-auto">
+                  <select
+                    value={reportsMethod}
+                    onChange={(e) => { setReportsMethod(e.target.value); setReportsPage(1); }}
+                    className="flex-1 md:flex-none px-3 py-1.5 border border-gov-border rounded outline-none text-sm bg-white"
+                  >
+                    <option value="">Todos os Métodos</option>
+                    <option value="POST">POST</option>
+                    <option value="PUT">PUT</option>
+                    <option value="PATCH">PATCH</option>
+                    <option value="DELETE">DELETE</option>
+                  </select>
+                  <Button type="submit" className="!py-1.5 text-sm flex-1 md:flex-none justify-center">Filtrar</Button>
+                </div>
               </form>
             </div>
 
             {loading ? <p className="text-center py-4 text-gray-500">Carregando...</p> : (
-              <>
+              <div className="overflow-x-auto">
                 <Table
                   data={reports}
                   keyExtractor={(item) => item.id}
@@ -425,7 +431,7 @@ export default function AdminDashboardPage() {
                   ]}
                 />
                 <Pagination currentPage={reportsPage} totalPages={reportsTotalPages} onPageChange={setReportsPage} />
-              </>
+              </div>
             )}
           </div>
         )}

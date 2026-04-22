@@ -15,7 +15,7 @@ interface TableProps {
 export function Table({ columns, data, keyExtractor }: TableProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="w-full p-8 text-center text-gray-500 border border-gov-border rounded bg-white">
+      <div className="w-full p-8 text-center text-gray-500 border border-gov-border rounded bg-white text-sm">
         Nenhum registro encontrado.
       </div>
     );
@@ -23,11 +23,11 @@ export function Table({ columns, data, keyExtractor }: TableProps) {
 
   return (
     <div className="overflow-x-auto border border-gov-border rounded bg-white">
-      <table className="min-w-full text-sm text-left">
+      <table className="min-w-full text-xs md:text-sm text-left">
         <thead className="bg-gray-100 text-gov-darkBlue font-semibold border-b border-gov-border">
           <tr>
             {columns.map((col) => (
-              <th key={col.key} className="px-6 py-3 whitespace-nowrap">
+              <th key={col.key} className="px-3 py-2 md:px-6 md:py-3 whitespace-nowrap">
                 {col.label}
               </th>
             ))}
@@ -40,7 +40,7 @@ export function Table({ columns, data, keyExtractor }: TableProps) {
               className={`border-b border-gray-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
             >
               {columns.map((col) => (
-                <td key={col.key} className="px-6 py-4">
+                <td key={col.key} className="px-3 py-2 md:px-6 md:py-4">
                   {col.render ? col.render(row) : row[col.key]}
                 </td>
               ))}
