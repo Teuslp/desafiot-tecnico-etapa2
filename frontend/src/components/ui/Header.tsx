@@ -38,6 +38,13 @@ export function Header() {
       {/* Direita: Ações do Usuário */}
       <div className="flex items-center gap-4">
         <button 
+          onClick={() => router.push('/dashboard/admin')}
+          className="text-sm font-semibold text-gov-darkBlue hover:underline"
+        >
+          ⚙️ Painel Admin
+        </button>
+
+        <button 
           onClick={() => router.push('/dashboard/products/new')}
           className="text-sm font-semibold text-gov-blue hover:underline"
         >

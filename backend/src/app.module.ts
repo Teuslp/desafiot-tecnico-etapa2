@@ -7,6 +7,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { AuditModule } from './audit/audit.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuditModule } from './audit/audit.module';
     ProductsModule,
     NotificationsModule,
     AuditModule,
+    AdminModule,
   ],
   controllers: [],
   providers: [],

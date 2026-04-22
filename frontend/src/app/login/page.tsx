@@ -71,19 +71,6 @@ export default function LoginPage() {
             </Button>
           </div>
         </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            Ainda não tem conta?{' '}
-            <button 
-              onClick={() => router.push('/register')}
-              className="text-gov-blue hover:underline font-semibold"
-            >
-              Cadastre-se
-            </button>
-          </p>
-        </div>
-
       </div>
     </div>
   );
