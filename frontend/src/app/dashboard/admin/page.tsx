@@ -7,17 +7,30 @@ import { Header } from '@/components/ui/Header';
 import { Button } from '@/components/ui/Button';
 import { Table } from '@/components/ui/Table';
 import { Input } from '@/components/ui/Input';
+import { Pagination } from '@/components/ui/Pagination';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'reports'>('overview');
   
+  // Dados
   const [overview, setOverview] = useState({ totalUsers: 0, totalProducts: 0, totalCategories: 0 });
   const [users, setUsers] = useState<any[]>([]);
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Estados do Modal de Novo Usuário
+  // Filtros Usuários
+  const [usersPage, setUsersPage] = useState(1);
+  const [usersTotalPages, setUsersTotalPages] = useState(1);
+  const [usersSearch, setUsersSearch] = useState('');
+
+  // Filtros Relatórios
+  const [reportsPage, setReportsPage] = useState(1);
+  const [reportsTotalPages, setReportsTotalPages] = useState(1);
+  const [reportsSearch, setReportsSearch] = useState('');
+  const [reportsMethod, setReportsMethod] = useState('');
+
+  // Estados do Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -27,29 +40,52 @@ export default function AdminDashboardPage() {
   const [modalSuccess, setModalSuccess] = useState('');
   const [modalLoading, setModalLoading] = useState(false);
 
-  const fetchData = async () => {
+  const fetchOverview = async () => {
+    try {
+      const res = await api.get('/admin/overview');
+      setOverview(res.data);
+    } catch (e) { console.error(e); }
+  };
+
+  const fetchUsers = async () => {
     setLoading(true);
     try {
-      if (activeTab === 'overview') {
-        const res = await api.get('/admin/overview');
-        setOverview(res.data);
-      } else if (activeTab === 'users') {
-        const res = await api.get('/users');
-        setUsers(res.data);
-      } else if (activeTab === 'reports') {
-        const res = await api.get('/admin/reports');
-        setReports(res.data);
-      }
-    } catch (error) {
-      console.error('Erro ao buscar dados do painel admin:', error);
-    } finally {
-      setLoading(false);
-    }
+      const res = await api.get('/users', {
+        params: { page: usersPage, limit: 10, search: usersSearch || undefined }
+      });
+      setUsers(res.data.data);
+      setUsersTotalPages(res.data.meta.totalPages);
+    } catch (e) { console.error(e); } finally { setLoading(false); }
+  };
+
+  const fetchReports = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/admin/reports', {
+        params: { page: reportsPage, limit: 10, search: reportsSearch || undefined, method: reportsMethod || undefined }
+      });
+      setReports(res.data.data);
+      setReportsTotalPages(res.data.meta.totalPages);
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
   useEffect(() => {
-    fetchData();
-  }, [activeTab]);
+    if (activeTab === 'overview') fetchOverview();
+    if (activeTab === 'users') fetchUsers();
+    if (activeTab === 'reports') fetchReports();
+  }, [activeTab, usersPage, reportsPage, reportsMethod]); 
+
+  const handleUsersSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setUsersPage(1);
+    fetchUsers();
+  };
+
+  const handleReportsSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setReportsPage(1);
+    fetchReports();
+  };
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,13 +96,12 @@ export default function AdminDashboardPage() {
     try {
       await api.post('/users', { name, email, password, role });
       setModalSuccess('Usuário cadastrado com sucesso!');
-      
-      // Limpar formulário e atualizar a lista
       setTimeout(() => {
         setIsModalOpen(false);
         setModalSuccess('');
         setName(''); setEmail(''); setPassword(''); setRole('STANDARD');
-        fetchData(); // Recarrega a tabela de usuários
+        fetchUsers(); 
+        if (activeTab === 'overview') fetchOverview();
       }, 1500);
     } catch (err: any) {
       setModalError(err.response?.data?.message || 'Erro ao cadastrar usuário.');
@@ -87,7 +122,6 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Abas */}
         <div className="flex border-b border-gray-300 mb-6">
           <button 
             className={`px-6 py-3 font-semibold text-sm transition-colors ${activeTab === 'overview' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
@@ -109,41 +143,47 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        {loading ? (
-          <div className="py-10 text-center text-gray-500 font-semibold">Carregando informações...</div>
-        ) : (
+        {activeTab === 'overview' && (
           <div className="bg-white p-6 border border-gov-border rounded shadow-sm">
-            
-            {/* CONTEÚDO: VISÃO GERAL */}
-            {activeTab === 'overview' && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gov-lightBlue p-6 rounded border border-blue-200">
-                  <h3 className="text-gov-darkBlue font-bold text-lg">Total de Usuários</h3>
-                  <p className="text-4xl font-bold text-gov-blue mt-2">{overview.totalUsers}</p>
-                </div>
-                <div className="bg-green-50 p-6 rounded border border-green-200">
-                  <h3 className="text-gov-darkBlue font-bold text-lg">Total de Produtos</h3>
-                  <p className="text-4xl font-bold text-gov-green mt-2">{overview.totalProducts}</p>
-                </div>
-                <div className="bg-yellow-50 p-6 rounded border border-yellow-200">
-                  <h3 className="text-gov-darkBlue font-bold text-lg">Total de Categorias</h3>
-                  <p className="text-4xl font-bold text-gov-yellow mt-2">{overview.totalCategories}</p>
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gov-lightBlue p-6 rounded border border-blue-200">
+                <h3 className="text-gov-darkBlue font-bold text-lg">Total de Usuários</h3>
+                <p className="text-4xl font-bold text-gov-blue mt-2">{overview.totalUsers}</p>
               </div>
-            )}
+              <div className="bg-green-50 p-6 rounded border border-green-200">
+                <h3 className="text-gov-darkBlue font-bold text-lg">Total de Produtos</h3>
+                <p className="text-4xl font-bold text-gov-green mt-2">{overview.totalProducts}</p>
+              </div>
+              <div className="bg-yellow-50 p-6 rounded border border-yellow-200">
+                <h3 className="text-gov-darkBlue font-bold text-lg">Total de Categorias</h3>
+                <p className="text-4xl font-bold text-gov-yellow mt-2">{overview.totalCategories}</p>
+              </div>
+            </div>
+          </div>
+        )}
 
-            {/* CONTEÚDO: USUÁRIOS */}
-            {activeTab === 'users' && (
-              <div>
-                <div className="mb-4 flex justify-between items-center">
-                  <h3 className="text-xl font-bold text-gov-darkBlue">Lista de Usuários</h3>
-                  <Button 
-                    onClick={() => setIsModalOpen(true)} 
-                    className="text-sm !py-2"
-                  >
-                    + Novo Usuário
-                  </Button>
-                </div>
+        {activeTab === 'users' && (
+          <div className="bg-white p-6 border border-gov-border rounded shadow-sm">
+            <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h3 className="text-xl font-bold text-gov-darkBlue">Lista de Usuários</h3>
+              
+              <form onSubmit={handleUsersSearch} className="flex gap-2 w-full md:w-auto">
+                <input 
+                  type="text" 
+                  placeholder="Pesquisar por nome ou email..." 
+                  value={usersSearch}
+                  onChange={(e) => setUsersSearch(e.target.value)}
+                  className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-64"
+                />
+                <Button type="submit" className="!py-1.5 text-sm">Pesquisar</Button>
+                <Button type="button" onClick={() => setIsModalOpen(true)} className="!py-1.5 text-sm ml-4">
+                  + Novo Usuário
+                </Button>
+              </form>
+            </div>
+
+            {loading ? <p className="text-center py-4 text-gray-500">Carregando...</p> : (
+              <>
                 <Table 
                   data={users}
                   keyExtractor={(item) => item.id}
@@ -159,16 +199,45 @@ export default function AdminDashboardPage() {
                     { key: 'createdAt', label: 'Data de Cadastro', render: (row) => new Date(row.createdAt).toLocaleDateString('pt-BR') },
                   ]}
                 />
-              </div>
+                <Pagination currentPage={usersPage} totalPages={usersTotalPages} onPageChange={setUsersPage} />
+              </>
             )}
+          </div>
+        )}
 
-            {/* CONTEÚDO: RELATÓRIOS */}
-            {activeTab === 'reports' && (
+        {activeTab === 'reports' && (
+          <div className="bg-white p-6 border border-gov-border rounded shadow-sm">
+            <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
               <div>
-                <div className="mb-4">
-                  <h3 className="text-xl font-bold text-gov-darkBlue">Relatório de Uso do Sistema</h3>
-                  <p className="text-sm text-gray-500">Trilha de auditoria das ações realizadas na API.</p>
-                </div>
+                <h3 className="text-xl font-bold text-gov-darkBlue">Relatório de Uso do Sistema</h3>
+                <p className="text-sm text-gray-500">Trilha de auditoria das ações realizadas na API.</p>
+              </div>
+              
+              <form onSubmit={handleReportsSearch} className="flex gap-2 w-full md:w-auto items-center">
+                <input 
+                  type="text" 
+                  placeholder="Pesquisar rota ou ação..." 
+                  value={reportsSearch}
+                  onChange={(e) => setReportsSearch(e.target.value)}
+                  className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-48"
+                />
+                <select
+                  value={reportsMethod}
+                  onChange={(e) => { setReportsMethod(e.target.value); setReportsPage(1); }}
+                  className="px-3 py-1.5 border border-gov-border rounded outline-none text-sm bg-white"
+                >
+                  <option value="">Todos os Métodos</option>
+                  <option value="POST">POST (Criação)</option>
+                  <option value="PUT">PUT (Atualização)</option>
+                  <option value="PATCH">PATCH (Atualização)</option>
+                  <option value="DELETE">DELETE (Exclusão)</option>
+                </select>
+                <Button type="submit" className="!py-1.5 text-sm">Filtrar</Button>
+              </form>
+            </div>
+
+            {loading ? <p className="text-center py-4 text-gray-500">Carregando...</p> : (
+              <>
                 <Table 
                   data={reports}
                   keyExtractor={(item) => item.id}
@@ -186,9 +255,9 @@ export default function AdminDashboardPage() {
                     { key: 'timestamp', label: 'Data/Hora', render: (row) => new Date(row.timestamp).toLocaleString('pt-BR') },
                   ]}
                 />
-              </div>
+                <Pagination currentPage={reportsPage} totalPages={reportsTotalPages} onPageChange={setReportsPage} />
+              </>
             )}
-
           </div>
         )}
       </main>
@@ -199,62 +268,26 @@ export default function AdminDashboardPage() {
           <div className="bg-white rounded shadow-lg w-full max-w-md border border-gov-border">
             <div className="p-4 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t">
               <h3 className="text-lg font-bold text-gov-darkBlue">Cadastrar Novo Usuário</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-red-500 font-bold">
-                ✕
-              </button>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-500 hover:text-red-500 font-bold">✕</button>
             </div>
             
             <form onSubmit={handleCreateUser} className="p-6 space-y-4">
-              <Input 
-                label="Nome Completo"
-                type="text"
-                placeholder="Ex: João da Silva"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                state={modalError ? 'error' : modalSuccess ? 'success' : 'default'}
-              />
-
-              <Input 
-                label="E-mail"
-                type="email"
-                placeholder="Ex: joao@instituicao.gov"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                state={modalError ? 'error' : modalSuccess ? 'success' : 'default'}
-              />
-
+              <Input label="Nome Completo" type="text" placeholder="Ex: João da Silva" value={name} onChange={(e) => setName(e.target.value)} required state={modalError ? 'error' : modalSuccess ? 'success' : 'default'} />
+              <Input label="E-mail" type="email" placeholder="Ex: joao@instituicao.gov" value={email} onChange={(e) => setEmail(e.target.value)} required state={modalError ? 'error' : modalSuccess ? 'success' : 'default'} />
+              
               <div className="flex flex-col mb-4">
                 <label className="mb-1 text-sm font-semibold text-gov-text">Perfil de Acesso</label>
-                <select 
-                  value={role}
-                  onChange={(e) => setRole(e.target.value)}
-                  className="w-full px-3 py-2 border border-gov-border rounded bg-white transition-colors focus:border-gov-blue focus:ring-1 focus:ring-gov-blue outline-none h-[42px]"
-                >
+                <select value={role} onChange={(e) => setRole(e.target.value)} className="w-full px-3 py-2 border border-gov-border rounded bg-white transition-colors focus:border-gov-blue focus:ring-1 focus:ring-gov-blue outline-none h-[42px]">
                   <option value="STANDARD">Usuário Padrão</option>
                   <option value="ADMIN">Administrador</option>
                 </select>
               </div>
 
-              <Input 
-                label="Senha Inicial"
-                type="password"
-                placeholder="Crie uma senha forte"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                state={modalError ? 'error' : modalSuccess ? 'success' : 'default'}
-                helperText={modalError || modalSuccess}
-              />
-
+              <Input label="Senha Inicial" type="password" placeholder="Crie uma senha forte" value={password} onChange={(e) => setPassword(e.target.value)} required state={modalError ? 'error' : modalSuccess ? 'success' : 'default'} helperText={modalError || modalSuccess} />
+              
               <div className="pt-4 flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-                  Cancelar
-                </Button>
-                <Button type="submit" disabled={modalLoading}>
-                  {modalLoading ? 'Salvando...' : 'Salvar'}
-                </Button>
+                <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>Cancelar</Button>
+                <Button type="submit" disabled={modalLoading}>{modalLoading ? 'Salvando...' : 'Salvar'}</Button>
               </div>
             </form>
           </div>

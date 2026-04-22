@@ -31,17 +31,7 @@ export function Header() {
         </div>
       </div>
 
-      {/* Centro: Barra de busca (opcional, visual) */}
-      <div className="hidden md:flex flex-1 max-w-lg mx-8 relative">
-        <input 
-          type="text" 
-          placeholder="O que você procura?" 
-          className="w-full bg-gray-100 rounded-full py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-gov-blue placeholder-italic"
-        />
-        <div className="absolute right-3 top-2.5 text-gov-blue font-bold">
-          ⌕
-        </div>
-      </div>
+
 
       {/* Direita: Ações do Usuário */}
       <div className="flex items-center gap-4">

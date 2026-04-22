@@ -26,13 +26,49 @@ export class ProductsService {
     });
   }
 
-  async findAll() {
-    return this.prisma.product.findMany({
-      include: {
-        categories: true,
-        createdBy: { select: { id: true, name: true } },
+  async findAll(pageStr?: string, limitStr?: string, search?: string, categoryIdStr?: string) {
+    const page = Number(pageStr) || 1;
+    const limit = Number(limitStr) || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { title: { contains: search, mode: 'insensitive' } },
+        { description: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+
+    if (categoryIdStr) {
+      where.categories = {
+        some: { id: Number(categoryIdStr) }
+      };
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.product.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          categories: true,
+          createdBy: { select: { id: true, name: true } },
+        },
+      }),
+      this.prisma.product.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-    });
+    };
   }
 
   async findOne(id: number) {

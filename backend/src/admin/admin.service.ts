@@ -17,21 +17,47 @@ export class AdminService {
     };
   }
 
-  async getReports() {
-    return this.prisma.auditLog.findMany({
-      orderBy: {
-        timestamp: 'desc',
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
+  async getReports(pageStr?: string, limitStr?: string, search?: string, methodFilter?: string) {
+    const page = Number(pageStr) || 1;
+    const limit = Number(limitStr) || 10;
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { route: { contains: search, mode: 'insensitive' } },
+        { action: { contains: search, mode: 'insensitive' } },
+      ];
+    }
+    
+    if (methodFilter) {
+      where.method = methodFilter;
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.auditLog.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { timestamp: 'desc' },
+        include: {
+          user: {
+            select: { id: true, name: true, email: true },
           },
         },
+      }),
+      this.prisma.auditLog.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
       },
-      take: 100, // Limita aos últimos 100 registros para não sobrecarregar
-    });
+    };
   }
 }

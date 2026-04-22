@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard, RolesGuard } from '../auth/guards';
 import { Roles } from '../auth/roles.decorator';
@@ -19,7 +19,12 @@ export class AdminController {
   }
 
   @Get('reports')
-  getReports() {
-    return this.adminService.getReports();
+  getReports(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('search') search?: string,
+    @Query('method') method?: string,
+  ) {
+    return this.adminService.getReports(page, limit, search, method);
   }
 }
