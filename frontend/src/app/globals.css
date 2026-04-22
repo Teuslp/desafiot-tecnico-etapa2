@@ -1,0 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-rawline: 'Rawline', 'Raleway', sans-serif;
+  --color-gov-blue: #1351b4;
+  --color-gov-lightBlue: #dbeafe;
+  --color-gov-darkBlue: #0c326f;
+  --color-gov-red: #e52207;
+  --color-gov-green: #168821;
+  --color-gov-yellow: #ffcd07;
+  --color-gov-gray: #f8f9fa;
+  --color-gov-border: #ccc;
+  --color-gov-text: #333333;
+  --radius-gov: 2rem;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-rawline);
+    background-color: #ffffff;
+    color: var(--color-gov-text);
+  }
+}
