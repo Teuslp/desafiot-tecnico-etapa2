@@ -3,6 +3,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -10,7 +14,10 @@ import { UsersModule } from './users/users.module';
     PrismaModule,
     AuthModule,
     UsersModule,
-    // TODO: Import ProductsModule, CategoriesModule
+    CategoriesModule,
+    ProductsModule,
+    NotificationsModule,
+    AuditModule,
   ],
   controllers: [],
   providers: [],
