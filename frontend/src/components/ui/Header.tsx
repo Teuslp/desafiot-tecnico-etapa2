@@ -13,7 +13,7 @@ export function Header() {
 
   useEffect(() => {
     setRole(Cookies.get('desafio.role') || 'STANDARD');
-    
+
     const token = Cookies.get('desafio.token');
     if (token) {
       api.get('/notifications')
@@ -43,8 +43,8 @@ export function Header() {
     <header className="w-full bg-white border-b-2 border-gov-blue sticky top-0 z-50 shadow-sm">
       <div className="max-w-7xl mx-auto w-full px-4 py-2 flex flex-col md:flex-row items-center justify-between">
         {/* LADO ESQUERDO: LOGO */}
-        <div 
-          onClick={goHome} 
+        <div
+          onClick={goHome}
           className="flex items-center gap-2 cursor-pointer mb-2 md:mb-0"
         >
           <div className="w-7 h-7 bg-gov-darkBlue rounded-md flex items-center justify-center">
@@ -58,14 +58,14 @@ export function Header() {
 
         {/* LADO DIREITO: NAVEGAÇÃO E AÇÕES */}
         <nav className="flex flex-wrap items-center justify-center gap-1.5 w-full md:w-auto">
-          
-          {/* Links Universais */}
+
+          {/* Link para o Catálogo (Vitrine) */}
           <button 
-            onClick={goHome} 
+            onClick={() => router.push('/dashboard')} 
             className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-gov-darkBlue hover:bg-blue-50 rounded transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-            Início
+            Catálogo
           </button>
 
           {/* Links Específicos ADMIN */}
@@ -82,21 +82,21 @@ export function Header() {
           {/* Links Específicos USUÁRIO PADRÃO */}
           {role === 'STANDARD' && (
             <>
-              <button 
+              <button
                 onClick={() => router.push('/dashboard/favorites')}
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-gov-darkBlue hover:bg-blue-50 rounded transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                 Favoritos
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/dashboard/categories/new')}
                 className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-gov-darkBlue hover:bg-blue-50 rounded transition-colors"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Categorias
               </button>
-              <button 
+              <button
                 onClick={() => router.push('/dashboard/products/new')}
                 className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold bg-gov-darkBlue text-white hover:bg-gov-blue rounded transition-colors"
               >
@@ -110,7 +110,7 @@ export function Header() {
 
           {/* SINO DE NOTIFICAÇÕES */}
           <div className="relative flex items-center">
-            <button 
+            <button
               onClick={() => setShowNotifications(!showNotifications)}
               className="relative p-1.5 text-gov-darkBlue hover:bg-blue-50 transition-colors rounded-full"
             >
@@ -142,7 +142,7 @@ export function Header() {
           </div>
 
           {/* LOGOUT */}
-          <button 
+          <button
             onClick={handleLogout}
             className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-red-600 hover:bg-red-50 rounded transition-colors"
           >

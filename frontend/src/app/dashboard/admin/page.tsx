@@ -11,11 +11,12 @@ import { Pagination } from '@/components/ui/Pagination';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'reports'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'products' | 'reports'>('overview');
 
   // Dados
   const [overview, setOverview] = useState({ totalUsers: 0, totalProducts: 0, totalCategories: 0 });
   const [users, setUsers] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -23,6 +24,11 @@ export default function AdminDashboardPage() {
   const [usersPage, setUsersPage] = useState(1);
   const [usersTotalPages, setUsersTotalPages] = useState(1);
   const [usersSearch, setUsersSearch] = useState('');
+
+  // Filtros Produtos
+  const [productsPage, setProductsPage] = useState(1);
+  const [productsTotalPages, setProductsTotalPages] = useState(1);
+  const [productsSearch, setProductsSearch] = useState('');
 
   // Filtros Relatórios
   const [reportsPage, setReportsPage] = useState(1);
@@ -69,11 +75,23 @@ export default function AdminDashboardPage() {
     } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
+  const fetchProducts = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/products', {
+        params: { page: productsPage, limit: 10, search: productsSearch || undefined }
+      });
+      setProducts(res.data.data);
+      setProductsTotalPages(res.data.meta.totalPages);
+    } catch (e) { console.error(e); } finally { setLoading(false); }
+  };
+
   useEffect(() => {
     if (activeTab === 'overview') fetchOverview();
     if (activeTab === 'users') fetchUsers();
+    if (activeTab === 'products') fetchProducts();
     if (activeTab === 'reports') fetchReports();
-  }, [activeTab, usersPage, reportsPage, reportsMethod]);
+  }, [activeTab, usersPage, productsPage, reportsPage, reportsMethod]);
 
   const handleUsersSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,6 +103,12 @@ export default function AdminDashboardPage() {
     e.preventDefault();
     setReportsPage(1);
     fetchReports();
+  };
+
+  const handleProductsSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setProductsPage(1);
+    fetchProducts();
   };
 
   const handleCreateUser = async (e: React.FormEvent) => {
@@ -122,24 +146,30 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        <div className="flex border-b border-gray-300 mb-6">
+        <div className="flex border-b border-gray-300 mb-6 overflow-x-auto whitespace-nowrap">
           <button
-            className={`px-6 py-3 font-semibold text-sm transition-colors ${activeTab === 'overview' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'overview' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
             onClick={() => setActiveTab('overview')}
           >
-            Visão Geral
+            <i className="fas fa-chart-line"></i> Visão Geral
           </button>
           <button
-            className={`px-6 py-3 font-semibold text-sm transition-colors ${activeTab === 'users' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'users' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
             onClick={() => setActiveTab('users')}
           >
-            Gestão de Usuários
+            <i className="fas fa-users"></i> Gestão de Usuários
           </button>
           <button
-            className={`px-6 py-3 font-semibold text-sm transition-colors ${activeTab === 'reports' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'products' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
+            onClick={() => setActiveTab('products')}
+          >
+            <i className="fas fa-box-open"></i> Gestão de Produtos
+          </button>
+          <button
+            className={`px-6 py-3 font-bold text-sm transition-colors flex items-center gap-2 ${activeTab === 'reports' ? 'border-b-4 border-gov-blue text-gov-blue' : 'text-gray-500 hover:text-gov-blue'}`}
             onClick={() => setActiveTab('reports')}
           >
-            Relatórios de Auditoria
+            <i className="fas fa-clipboard-list"></i> Auditoria
           </button>
         </div>
 
@@ -294,6 +324,49 @@ export default function AdminDashboardPage() {
                   ]}
                 />
                 <Pagination currentPage={usersPage} totalPages={usersTotalPages} onPageChange={setUsersPage} />
+              </>
+            )}
+          </div>
+        )}
+
+        {activeTab === 'products' && (
+          <div className="bg-white p-6 border border-gov-border rounded shadow-sm">
+            <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <h3 className="text-xl font-bold text-gov-darkBlue">Catálogo de Produtos</h3>
+
+              <form onSubmit={handleProductsSearch} className="flex gap-2 w-full md:w-auto">
+                <input
+                  type="text"
+                  placeholder="Pesquisar por título..."
+                  value={productsSearch}
+                  onChange={(e) => setProductsSearch(e.target.value)}
+                  className="px-3 py-1.5 border border-gov-border rounded focus:ring-1 focus:ring-gov-blue outline-none text-sm w-full md:w-64"
+                />
+                <Button type="submit" className="!py-1.5 text-sm">Pesquisar</Button>
+                <Button type="button" onClick={() => router.push('/dashboard/products/new')} className="!py-1.5 text-sm ml-4">
+                  + Novo Produto
+                </Button>
+              </form>
+            </div>
+
+            {loading ? <p className="text-center py-4 text-gray-500">Carregando...</p> : (
+              <>
+                <Table
+                  data={products}
+                  keyExtractor={(item) => item.id}
+                  columns={[
+                    { key: 'id', label: 'ID' },
+                    { key: 'title', label: 'Título' },
+                    { key: 'price', label: 'Preço', render: (row) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(row.price) },
+                    { key: 'owner', label: 'Dono', render: (row) => row.owner?.name || 'Sistema' },
+                    {
+                      key: 'imageUrl', label: 'Imagem', render: (row) => row.imageUrl ? (
+                        <img src={`http://localhost:3000${row.imageUrl}`} alt={row.title} className="w-10 h-10 object-cover rounded border border-gray-200" />
+                      ) : 'Sem Foto'
+                    },
+                  ]}
+                />
+                <Pagination currentPage={productsPage} totalPages={productsTotalPages} onPageChange={setProductsPage} />
               </>
             )}
           </div>
