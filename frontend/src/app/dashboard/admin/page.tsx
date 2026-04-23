@@ -407,6 +407,17 @@ export default function AdminDashboardPage() {
                     { key: 'id', label: 'ID' },
                     { key: 'title', label: 'Título' },
                     { key: 'price', label: 'Preço', render: (row) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(row.price) },
+                    { 
+                      key: 'categories', label: 'Categorias', render: (row) => (
+                        <div className="flex flex-wrap gap-1 max-w-[200px]">
+                          {row.categories && row.categories.length > 0 ? row.categories.map((cat: any) => (
+                            <span key={cat.id} className="bg-gray-100 text-gray-600 text-[10px] px-1.5 py-0.5 rounded border border-gray-200 whitespace-nowrap">
+                              {cat.name}
+                            </span>
+                          )) : <span className="text-gray-400 italic text-[10px]">Nenhuma</span>}
+                        </div>
+                      )
+                    },
                     { key: 'owner', label: 'Dono', render: (row) => row.owner?.name || 'Sistema' },
                     {
                       key: 'imageUrl', label: 'Imagem', render: (row) => row.imageUrl ? (

@@ -9,7 +9,7 @@ import { Role } from '@prisma/client';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiConsumes, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -19,12 +19,19 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Roles(Role.ADMIN) // Apenas ADMIN pode criar usuários livremente na API
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Criar um novo usuário (Apenas ADMIN)' })
+  @ApiResponse({ status: 201, description: 'Usuário criado com sucesso.' })
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Listar todos os usuários com paginação' })
+  @ApiQuery({ name: 'page', required: false, example: '1' })
+  @ApiQuery({ name: 'limit', required: false, example: '10' })
+  @ApiQuery({ name: 'search', required: false, description: 'Pesquisar por nome ou email' })
+  @ApiResponse({ status: 200, description: 'Lista de usuários retornada.' })
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -34,12 +41,17 @@ export class UsersController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Obter dados de um usuário pelo ID' })
+  @ApiResponse({ status: 200, description: 'Dados do usuário.' })
+  @ApiResponse({ status: 404, description: 'Usuário não encontrado.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({ summary: 'Atualizar dados de um usuário (incluindo avatar)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Usuário atualizado.' })
   @UseInterceptors(FileInterceptor('avatar', {
     storage: diskStorage({
       destination: './uploads/avatars',
@@ -61,6 +73,8 @@ export class UsersController {
 
   @Delete(':id')
   @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Remover um usuário (Apenas ADMIN)' })
+  @ApiResponse({ status: 200, description: 'Usuário removido.' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.remove(id);
   }

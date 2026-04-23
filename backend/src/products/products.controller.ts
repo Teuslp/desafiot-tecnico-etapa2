@@ -5,7 +5,7 @@ import { JwtAuthGuard } from '../auth/guards';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ApiTags, ApiBearerAuth, ApiConsumes } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiConsumes, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Products')
 @ApiBearerAuth()
@@ -15,7 +15,9 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({ summary: 'Criar um novo produto (com imagem)' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 201, description: 'Produto criado com sucesso.' })
   @UseInterceptors(FileInterceptor('image', {
     storage: diskStorage({
       destination: './uploads/products',
@@ -36,11 +38,19 @@ export class ProductsController {
   }
 
   @Get('favorites')
+  @ApiOperation({ summary: 'Listar produtos favoritos do usuário logado' })
+  @ApiResponse({ status: 200, description: 'Lista de favoritos retornada.' })
   getFavorites(@Request() req) {
     return this.productsService.getFavorites(req.user.id);
   }
 
   @Get()
+  @ApiOperation({ summary: 'Listar produtos com paginação e filtros' })
+  @ApiQuery({ name: 'page', required: false, example: '1' })
+  @ApiQuery({ name: 'limit', required: false, example: '10' })
+  @ApiQuery({ name: 'search', required: false, description: 'Pesquisar por título' })
+  @ApiQuery({ name: 'category', required: false, description: 'Filtrar por nome da categoria' })
+  @ApiResponse({ status: 200, description: 'Lista de produtos retornada.' })
   findAll(
     @Query('page') page?: string,
     @Query('limit') limit?: string,
@@ -51,12 +61,17 @@ export class ProductsController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Obter detalhes de um produto específico' })
+  @ApiResponse({ status: 200, description: 'Dados do produto.' })
+  @ApiResponse({ status: 404, description: 'Produto não encontrado.' })
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.findOne(id);
   }
 
   @Patch(':id')
-  @ApiConsumes('multipart/form-data', 'application/json')
+  @ApiOperation({ summary: 'Atualizar um produto existente' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Produto atualizado.' })
   @UseInterceptors(FileInterceptor('image', {
     storage: diskStorage({
       destination: './uploads/products',
@@ -77,16 +92,22 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Remover um produto' })
+  @ApiResponse({ status: 200, description: 'Produto removido.' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.productsService.remove(id);
   }
 
   @Post(':id/favorite')
+  @ApiOperation({ summary: 'Adicionar produto aos favoritos' })
+  @ApiResponse({ status: 201, description: 'Adicionado aos favoritos.' })
   favorite(@Param('id', ParseIntPipe) id: number, @Request() req) {
     return this.productsService.favorite(id, req.user.id);
   }
 
   @Delete(':id/favorite')
+  @ApiOperation({ summary: 'Remover produto dos favoritos' })
+  @ApiResponse({ status: 200, description: 'Removido dos favoritos.' })
   unfavorite(@Param('id', ParseIntPipe) id: number, @Request() req) {
     return this.productsService.unfavorite(id, req.user.id);
   }
