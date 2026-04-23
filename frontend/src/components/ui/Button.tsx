@@ -1,10 +1,11 @@
 import React from 'react';
-import { BrButton } from '@govbr-ds/react-components';
+import { Button as GovPeButton } from '@uigovpe/components';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'outline' | 'ghost';
   fullWidth?: boolean;
-  icon?: React.ReactNode;
+  icon?: string; // GovPE usually uses icon names as strings or specific icon components
+  label?: string;
 }
 
 export function Button({ 
@@ -13,23 +14,23 @@ export function Button({
   fullWidth = false, 
   icon,
   className = '',
+  label,
   ...props 
 }: ButtonProps) {
   
-  // Mapeamento das propriedades do nosso sistema para o BrButton oficial
-  const isPrimary = variant === 'primary';
-  const isSecondary = variant === 'outline';
+  // Mapeamento de variantes para o padrão UI-GovPE (assumindo severity ou variantes comuns)
+  // Se a biblioteca segue o padrão PrimeReact (comum em PE), seria severity.
+  // No exemplo do usuário, apenas label foi mostrado.
   
   return (
-    <BrButton 
-      primary={isPrimary}
-      secondary={isSecondary}
-      block={fullWidth}
-      className={className}
+    <GovPeButton 
+      label={label || (typeof children === 'string' ? children : undefined)}
+      icon={icon}
+      className={`${fullWidth ? 'w-full' : ''} ${className}`}
+      variant={variant === 'outline' ? 'outlined' : variant === 'ghost' ? 'text' : undefined}
       {...(props as any)}
     >
-      {icon && <span className="mr-2">{icon}</span>}
-      {children}
-    </BrButton>
+      {typeof children !== 'string' && children}
+    </GovPeButton>
   );
 }

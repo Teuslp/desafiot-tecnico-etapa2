@@ -1,13 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { api } from '@/services/api';
 import { Header } from '@/components/ui/Header';
 import { ProductCard } from '@/components/ui/ProductCard';
+import { Button } from '@/components/ui/Button';
+import type { Product } from '@/components/ui/ProductCard';
 
 export default function FavoritesPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const fetchFavorites = async () => {
     setLoading(true);
@@ -22,48 +26,82 @@ export default function FavoritesPage() {
   };
 
   useEffect(() => {
-    fetchFavorites();
+    const timer = window.setTimeout(() => {
+      void fetchFavorites();
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   const handleFavorite = async (id: number) => {
     try {
       await api.delete(`/products/${id}/favorite`);
-      alert('Produto removido dos favoritos!');
-      fetchFavorites(); 
+      fetchFavorites();
     } catch (error) {
-      alert('Erro ao desfavoritar.');
+      console.error('Erro ao desfavoritar:', error);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gov-gray flex flex-col">
+    <div className="page-shell">
       <Header />
-      
-      <main className="flex-1 w-full max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-6 border-b border-gray-200 pb-4">
-          <h2 className="text-3xl font-bold text-gov-darkBlue mb-2">Meus Favoritos</h2>
-          <p className="text-gray-600">Listagem dos produtos que você marcou com estrela.</p>
-        </div>
 
-        {loading ? (
-          <div className="text-center py-20 text-gray-500 font-semibold">
-            Buscando seus favoritos...
+      <main className="main-content">
+        <section className="page-hero rounded-[1rem] px-4 py-6 text-white sm:px-5 sm:py-7 md:px-7 md:py-8">
+          <span className="eyebrow text-white">
+            <i className="pi pi-heart-fill"></i>
+            Selecao pessoal
+          </span>
+          <div className="mt-5 flex flex-col items-center gap-5 text-center lg:flex-row lg:items-end lg:justify-between lg:text-left">
+            <div className="max-w-3xl">
+              <h1 className="section-title text-white">Favoritos salvos para acesso rapido</h1>
+              <p className="section-subtitle mt-4">
+                Mantenha por perto os produtos mais relevantes para o seu dia a dia e volte a eles com facilidade.
+              </p>
+            </div>
+            <div className="w-full max-w-[15rem] rounded-[0.9rem] border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <p className="text-[0.68rem] font-black uppercase tracking-[0.2em] text-white/70">Itens favoritados</p>
+              <p className="mt-2 text-2xl font-black sm:text-3xl">{products.length}</p>
+            </div>
           </div>
-        ) : products.length === 0 ? (
-          <div className="bg-white border border-gov-border rounded p-12 text-center text-gray-500">
-            Você ainda não favoritou nenhum produto. Volte ao catálogo e escolha os seus favoritos!
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {products.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
-                onFavorite={handleFavorite}
-              />
-            ))}
-          </div>
-        )}
+        </section>
+
+        <section className="mt-5 w-full">
+          {loading ? (
+            <div className="grid-cards">
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="surface-card flex h-88 flex-col rounded-[1rem] p-4 animate-pulse sm:h-96 sm:p-5">
+                  <div className="mb-5 h-44 w-full rounded-[0.9rem] bg-slate-100 sm:h-48"></div>
+                  <div className="mb-3 h-6 w-3/4 rounded-md bg-slate-100"></div>
+                  <div className="h-4 w-1/2 rounded-md bg-slate-50"></div>
+                </div>
+              ))}
+            </div>
+          ) : products.length === 0 ? (
+            <div className="mx-auto flex max-w-2xl flex-col items-center justify-center rounded-[1rem] bg-white px-5 py-10 text-center shadow-sm sm:px-8 sm:py-14">
+              <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-300 sm:h-20 sm:w-20">
+                <i className="pi pi-heart text-4xl"></i>
+              </div>
+              <h3 className="text-2xl font-black text-gov-darkBlue">Sua lista ainda esta vazia</h3>
+              <p className="mb-10 mt-3 max-w-sm text-sm leading-7 text-slate-500">
+                Favorite produtos no catalogo principal para montar sua area de acesso rapido.
+              </p>
+              <Button onClick={() => router.push('/dashboard')} className="h-11 rounded-xl px-8 text-[11px] font-black uppercase tracking-[0.16em] shadow-lg sm:h-12">
+                Ver catalogo
+              </Button>
+            </div>
+          ) : (
+            <div className="grid-cards">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onFavorite={handleFavorite}
+                />
+              ))}
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
