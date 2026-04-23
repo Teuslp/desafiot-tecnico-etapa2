@@ -7,7 +7,7 @@ Este projeto é uma plataforma de gerenciamento administrativo e catálogo de pr
 ### Frontend
 - **Next.js 14+**: App Router e Server Components.
 - **Tailwind CSS**: Estilização responsiva e moderna.
-- **GovBR-DS (React Components)**: Padronização visual seguindo a identidade do Governo Federal.
+- **UI-GovPE**: Biblioteca de componentes padrão do Governo de Pernambuco.
 - **FontAwesome**: Iconografia profissional.
 - **Axios**: Comunicação com a API.
 
@@ -27,6 +27,13 @@ O projeto utiliza um sistema de **Layout Adaptativo**. Em dispositivos móveis, 
 
 Para o gerenciamento de categorias, implementamos um componente de **Multi-select Dropdown com Chips**, que permite ao administrador vincular múltiplas categorias a um único produto (atendendo plenamente aos requisitos de negócio) de forma limpa, moderna e intuitiva.
 
+
+## Acesso ao Sistema
+
+Para testar as funcionalidades administrativas e o catálogo, utilize as credenciais padrão geradas pelo script de seed:
+
+- **Usuário Admin**: `admin@admin.com`
+- **Senha**: `admin123`
 
 ---
 
