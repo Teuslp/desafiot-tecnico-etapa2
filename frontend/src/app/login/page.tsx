@@ -1,182 +1,151 @@
-"use client";
+'use client'
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
-import { Message } from '@uigovpe/components';
-import { loginUser } from '@/services/requests';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+// React
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
-export default function LoginPage() {
+// Lib Design System
+import { Button, Card, FlexContainer, InputMask, InputPassword, TextLink, Typography } from "@uigovpe/components";
+
+// Form e Validações
+import { useForm, Controller } from 'react-hook-form';
+import { z } from 'zod';
+
+const loginSchema = z.object({
+  cpf: z.string().min(1, { message: "CPF é obrigatório" }),
+  senha: z.string().min(1, { message: "Senha é obrigatória" }),
+});
+
+type LoginFormData = z.infer<typeof loginSchema>;
+
+export default function Login() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const getErrorMessage = (error: unknown) => {
-    if (
-      typeof error === 'object' &&
-      error !== null &&
-      'response' in error &&
-      typeof (error as { response?: unknown }).response === 'object' &&
-      (error as { response?: { data?: unknown } }).response?.data &&
-      typeof (error as { response?: { data?: { message?: unknown } } }).response?.data?.message === 'string'
-    ) {
-      return (error as { response?: { data?: { message?: string } } }).response?.data?.message;
+  const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
+    defaultValues: {
+      cpf: "",
+      senha: ""
     }
+  });
 
-    return 'E-mail ou senha inválidos.';
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
-
-    try {
-      const response = await loginUser({ email, password });
-
-      const token = response.data.access_token;
-      const role = response.data.user?.role || 'STANDARD';
-      const name = response.data.user?.name || 'Usuario';
-
-      Cookies.set('desafio.token', token, { expires: 1 });
-      Cookies.set('desafio.role', role, { expires: 1 });
-      Cookies.set('desafio.name', name, { expires: 1 });
-
-      if (role === 'ADMIN') {
-        router.push('/dashboard/admin');
-      } else {
-        router.push('/dashboard');
-      }
-    } catch (err: unknown) {
-      setError(getErrorMessage(err) || 'E-mail ou senha inválidos.');
-    } finally {
-      setLoading(false);
-    }
+  const onSubmit = (data: LoginFormData) => {
+    setIsLoading(true)
+    console.log(data);
+    
+    // Realizar autenticação
+    setTimeout(() => {
+      setIsLoading(false)
+      // router.push('/home')
+    }, 2000);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 py-8 sm:px-6">
-      <div className="grid w-full max-w-5xl items-stretch gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:gap-8">
-        {/* Left Side: Brand & Hero (Visible only on Desktop) */}
-        <section className="page-hero hidden flex-col justify-between rounded-[2rem] p-10 text-white lg:flex">
-          <div className="space-y-8">
-            <span className="eyebrow flex w-fit items-center gap-2 border-white/20 bg-white/10 text-white">
-              <i className="pi pi-shield"></i>
-              Portal Institucional
-            </span>
-            <div className="space-y-6">
-              <h1 className="text-5xl font-black leading-tight tracking-tight text-white">
-                Gestão de Produtos com Identidade GovPE
-              </h1>
-              <p className="max-w-md text-lg leading-relaxed text-white/80">
-                Uma experiência mais clara, confiável e coerente com o ecossistema visual do Governo de Pernambuco.
-              </p>
-            </div>
+    <>
+      <div className="p-8 md:p-12 max-w-md">
+        <FlexContainer
+          direction="row"
+          gap="12"
+          justify="center"
+          align="center"
+          className="mb-12 max-w-96"
+        >
+          <div>
+            <Image
+              src="/logos/logo-farmacia-digital.svg"
+              width={200}
+              height={100}
+              alt="Farmácia Digital"
+              className="responsive-img rounded"
+            />
           </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {[
-              { icon: 'pi pi-box', title: 'Catálogo', text: 'Centralizado e organizado.' },
-              { icon: 'pi pi-users', title: 'Acessos', text: 'Perfis administrativos.' },
-              { icon: 'pi pi-chart-line', title: 'Auditoria', text: 'Logs de operação.' },
-            ].map((item) => (
-              <div key={item.title} className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-md">
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-white text-gov-darkBlue shadow-sm">
-                  <i className={item.icon}></i>
-                </div>
-                <h2 className="text-xs font-black uppercase tracking-widest">{item.title}</h2>
-                <p className="mt-1.5 text-[11px] leading-relaxed text-white/60">{item.text}</p>
-              </div>
-            ))}
+          <div>
+            <Image
+              src="/logos/logo-secretaria.svg"
+              width={200}
+              height={100}
+              alt="Secretaria de Educação e Esportes"
+              className="contrast-img responsive-img rounded"
+            />
           </div>
-        </section>
+        </FlexContainer>
 
-        {/* Right Side: Login Form */}
-        <section className="surface-card relative flex flex-col justify-center overflow-hidden rounded-[2rem] bg-white shadow-2xl lg:shadow-none">
-          <div className="absolute top-0 h-1.5 w-full bg-gradient-to-r from-gov-darkBlue via-gov-blue to-gov-yellow"></div>
-          
-          <div className="flex flex-col p-8 sm:p-12 lg:p-16">
-            <div className="mb-10 text-center lg:text-left">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-gov-blue/10 text-gov-blue lg:hidden">
-                <i className="pi pi-box text-2xl"></i>
-              </div>
-              <p className="text-[0.65rem] font-black uppercase tracking-[0.3em] text-gov-blue sm:text-[0.7rem]">
-                GovProdutos Pernambuco
-              </p>
-              <h2 className="mt-2 text-4xl font-black tracking-tight text-gov-darkBlue sm:text-5xl">Entrar</h2>
-              <p className="mt-4 text-sm font-medium leading-relaxed text-slate-500">
-                Acesse o portal com suas credenciais para gerenciar o catálogo institucional.
-              </p>
-            </div>
-
-            <form onSubmit={handleLogin} className="flex flex-col gap-5">
-              {error && (
-                <div className="flex items-center gap-3 rounded-xl border border-red-100 bg-red-50 p-4 text-sm font-bold text-red-600 animate-in fade-in">
-                  <i className="pi pi-exclamation-circle text-lg"></i>
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-1">
-                <Input
-                  label="E-mail Institucional"
-                  type="email"
-                  placeholder="nome@pe.gov.br"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  state={error ? 'error' : 'default'}
-                  icon="pi pi-envelope"
-                  className="!mb-0"
+        <Card title="Login">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FlexContainer
+              direction="col"
+              gap="4"
+              justify="center"
+              align="start"
+            >
+              <div className="w-full">
+                <Controller
+                  name="cpf"
+                  control={control}
+                  render={({ field }) => (
+                    <InputMask
+                      {...field}
+                      label="CPF"
+                      placeholder="000.000.000-00"
+                      mask="999.999.999-99"
+                      invalid={!!errors.cpf}
+                      supportText={errors.cpf?.message}
+                    />
+                  )}
                 />
               </div>
 
-              <div className="space-y-1">
-                <Input
-                  label="Senha de Acesso"
-                  type="password"
-                  placeholder="Informe sua senha"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  state={error ? 'error' : 'default'}
-                  icon="pi pi-lock"
-                  className="!mb-0"
+              <div className="w-full">
+                <Controller
+                  name="senha"
+                  control={control}
+                  render={({ field }) => (
+                    <InputPassword
+                      {...field}
+                      label="Senha"
+                      placeholder="Digite sua senha"
+                      invalid={!!errors.senha}
+                      supportText={errors.senha?.message}
+                      keyfilter={/^S+$/}
+                    />
+                  )}
                 />
               </div>
+
+              <Typography
+                variant="div"
+                size="small"
+                className="w-full flex-1"
+              >
+                <TextLink onClick={() => router.push('/recover-password')}>
+                  Esqueci a minha senha
+                </TextLink>
+              </Typography>
 
               <Button
                 type="submit"
-                disabled={loading}
-                className="mt-2 h-14 w-full rounded-2xl text-[12px] font-black uppercase tracking-widest shadow-xl shadow-blue-900/15 sm:text-sm"
-              >
-                {loading ? (
-                  <span className="flex items-center gap-3">
-                    <i className="pi pi-spin pi-spinner"></i>
-                    Autenticando
-                  </span>
-                ) : 'Acessar Portal'}
-              </Button>
+                label="Entrar"
+                className="w-full"
+                loading={isLoading}
+              />
 
-              <div className="mt-6 flex flex-col items-center gap-4 rounded-2xl bg-slate-50/80 p-5 text-center sm:flex-row sm:text-left">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-slate-400 shadow-sm">
-                  <i className="pi pi-info"></i>
-                </div>
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Ambiente Seguro</p>
-                  <p className="mt-0.5 text-xs font-medium leading-relaxed text-slate-500">
-                    Acesso restrito a usuários autorizados do ecossistema GovPE.
-                  </p>
-                </div>
-              </div>
-            </form>
-          </div>
-        </section>
+              <Typography
+                variant="div"
+                textAlign="center"
+                className="w-full flex-1"
+              >
+                {'Não tem uma conta? '}
+                <TextLink onClick={() => router.push('/register')}>
+                  Cadastre-se
+                </TextLink>
+              </Typography>
+
+            </FlexContainer>
+
+          </form>
+        </Card>
       </div>
-    </div>
+    </>
   );
 }
