@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,12 @@ async function main() {
     });
     console.log('Usuário ADMIN criado com sucesso! (admin@admin.com / admin123)');
   } else {
-    console.log('Usuário ADMIN já existe.');
+    const hashedPassword = await bcrypt.hash('admin123', 10);
+    await prisma.user.update({
+      where: { email: adminEmail },
+      data: { password: hashedPassword }
+    });
+    console.log('Senha do ADMIN atualizada com sucesso! (admin@admin.com / admin123)');
   }
 }
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/services/api';
+import { getCategories, createProduct } from '@/services/requests';
 import { Header } from '@/components/ui/Header';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -29,7 +29,7 @@ export default function NewProductPage() {
 
   // Busca as categorias ao carregar a página
   useEffect(() => {
-    api.get('/categories')
+    getCategories()
       .then(res => setCategories(res.data))
       .catch(err => console.error('Erro ao buscar categorias', err));
   }, []);
@@ -76,11 +76,7 @@ export default function NewProductPage() {
         formData.append('image', image);
       }
 
-      await api.post('/products', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
+      await createProduct(formData);
 
       router.push('/dashboard');
     } catch (err: any) {

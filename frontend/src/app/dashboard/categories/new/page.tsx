@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Message } from '@uigovpe/components';
-import { api } from '@/services/api';
+import { createCategory } from '@/services/requests';
 import { Header } from '@/components/ui/Header';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -37,13 +37,13 @@ export default function NewCategoryPage() {
     setLoading(true);
 
     try {
-      await api.post('/categories', { name });
+      await createCategory({ name });
       setSuccess('Categoria criada com sucesso!');
       setTimeout(() => {
         router.push('/dashboard');
       }, 1500);
     } catch (err: unknown) {
-      setError(getErrorMessage(err));
+      setError(getErrorMessage(err) || 'Erro ao criar categoria.');
     } finally {
       setLoading(false);
     }

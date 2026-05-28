@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { Message } from '@uigovpe/components';
-import { api } from '@/services/api';
+import { loginUser } from '@/services/requests';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
@@ -36,7 +36,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const response = await api.post('/auth/login', { email, password });
+      const response = await loginUser({ email, password });
 
       const token = response.data.access_token;
       const role = response.data.user?.role || 'STANDARD';
@@ -52,7 +52,7 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (err: unknown) {
-      setError(getErrorMessage(err));
+      setError(getErrorMessage(err) || 'E-mail ou senha inválidos.');
     } finally {
       setLoading(false);
     }

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/services/api';
+import { getFavorites, removeFavorite } from '@/services/requests';
 import { Header } from '@/components/ui/Header';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { Button } from '@/components/ui/Button';
@@ -16,7 +16,7 @@ export default function FavoritesPage() {
   const fetchFavorites = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/products/favorites');
+      const response = await getFavorites();
       setProducts(response.data);
     } catch (error) {
       console.error('Erro ao buscar favoritos:', error);
@@ -35,7 +35,7 @@ export default function FavoritesPage() {
 
   const handleFavorite = async (id: number) => {
     try {
-      await api.delete(`/products/${id}/favorite`);
+      await removeFavorite(id);
       fetchFavorites();
     } catch (error) {
       console.error('Erro ao desfavoritar:', error);
