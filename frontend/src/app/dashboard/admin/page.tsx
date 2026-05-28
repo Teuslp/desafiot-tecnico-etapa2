@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Message } from '@uigovpe/components';
-import { api } from '@/services/api';
+import { getAdminOverview, getUsers, getProducts, getAdminReports, createUser } from '@/services/requests';
 import { Header } from '@/components/ui/Header';
 import { Button } from '@/components/ui/Button';
 import { Table } from '@/components/ui/Table';
@@ -117,7 +117,7 @@ export default function AdminDashboardPage() {
   const fetchOverview = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/admin/overview');
+      const response = await getAdminOverview();
       setOverview({
         totalUsers: response.data.totalUsers || 0,
         totalProducts: response.data.totalProducts || 0,
@@ -135,9 +135,7 @@ export default function AdminDashboardPage() {
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/users', {
-        params: { page: usersPage, limit: 10, search: usersSearch || undefined },
-      });
+      const response = await getUsers({ page: usersPage, limit: 10, search: usersSearch || undefined });
       setUsers(response.data.data);
       setUsersTotalPages(response.data.meta.totalPages);
     } catch (error) {
@@ -150,9 +148,7 @@ export default function AdminDashboardPage() {
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/products', {
-        params: { page: productsPage, limit: 10, search: productsSearch || undefined },
-      });
+      const response = await getProducts({ page: productsPage, limit: 10, search: productsSearch || undefined });
       setProducts(response.data.data);
       setProductsTotalPages(response.data.meta.totalPages);
     } catch (error) {
@@ -165,13 +161,11 @@ export default function AdminDashboardPage() {
   const fetchReports = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await api.get('/admin/reports', {
-        params: {
-          page: reportsPage,
-          limit: 10,
-          search: reportsSearch || undefined,
-          method: reportsMethod || undefined,
-        },
+      const response = await getAdminReports({
+        page: reportsPage,
+        limit: 10,
+        search: reportsSearch || undefined,
+        method: reportsMethod || undefined,
       });
       setReports(response.data.data);
       setReportsTotalPages(response.data.meta.totalPages);
@@ -226,7 +220,7 @@ export default function AdminDashboardPage() {
     setModalLoading(true);
 
     try {
-      await api.post('/users', { name, email, password, role });
+      await createUser({ name, email, password, role });
       setModalSuccess('Usuario cadastrado com sucesso!');
 
       window.setTimeout(() => {
@@ -250,13 +244,11 @@ export default function AdminDashboardPage() {
 
   const handleExportCSV = async () => {
     try {
-      const response = await api.get('/admin/reports', {
-        params: {
-          page: 1,
-          limit: 10000,
-          search: reportsSearch || undefined,
-          method: reportsMethod || undefined,
-        },
+      const response = await getAdminReports({
+        page: 1,
+        limit: 10000,
+        search: reportsSearch || undefined,
+        method: reportsMethod || undefined,
       });
 
       const dataToExport: ReportItem[] = response.data.data;

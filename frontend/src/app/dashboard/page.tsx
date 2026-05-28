@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import { Message } from '@uigovpe/components';
-import { api } from '@/services/api';
+import { getCategories, getProducts, addFavorite } from '@/services/requests';
 import { Header } from '@/components/ui/Header';
 import { ProductCard } from '@/components/ui/ProductCard';
 import { Pagination } from '@/components/ui/Pagination';
@@ -34,7 +34,7 @@ export default function DashboardPage() {
   const [categoryId, setCategoryId] = useState('');
 
   useEffect(() => {
-    api.get('/categories')
+    getCategories()
       .then((res) => setCategories(res.data))
       .catch(() => console.error('Falha ao carregar categorias.'));
   }, []);
@@ -43,13 +43,11 @@ export default function DashboardPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await api.get('/products', {
-        params: {
-          page,
-          limit: 12,
-          search: search || undefined,
-          category: categoryId || undefined,
-        },
+      const response = await getProducts({
+        page,
+        limit: 12,
+        search: search || undefined,
+        category: categoryId || undefined,
       });
       setProducts(response.data.data);
       setTotalPages(response.data.meta.totalPages);
@@ -77,7 +75,7 @@ export default function DashboardPage() {
 
   const handleFavorite = async (id: number) => {
     try {
-      await api.post(`/products/${id}/favorite`);
+      await addFavorite(id);
     } catch (error) {
       console.error('Falha ao favoritar:', error);
     }

@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { Avatar, Badge } from '@uigovpe/components';
-import { api } from '@/services/api';
+import { getNotifications } from '@/services/requests';
 import { Button } from '@/components/ui/Button';
 
 interface Notification {
@@ -38,7 +38,7 @@ export function Header() {
   useEffect(() => {
     const token = Cookies.get('desafio.token');
     if (token) {
-      api.get('/notifications')
+      getNotifications()
         .then((res) => setNotifications(res.data))
         .catch(console.error);
     }
@@ -189,6 +189,7 @@ export function Header() {
             </div>
 
             <Avatar
+              label={name || 'Usuario'}
               image={`https://ui-avatars.com/api/?name=${name}&background=0c326f&color=fff`}
               className="h-10 w-10 rounded-xl border border-slate-100"
             />
@@ -207,6 +208,7 @@ export function Header() {
           <div className="surface-card rounded-[1rem] p-3 lg:hidden">
             <div className="mb-3 flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-3 py-3">
               <Avatar
+                label={name || 'Usuario'}
                 image={`https://ui-avatars.com/api/?name=${name}&background=0c326f&color=fff`}
                 className="h-10 w-10 rounded-xl border border-slate-100"
               />

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/services/api';
+import { createUser } from '@/services/requests';
 import { Header } from '@/components/ui/Header';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -25,7 +25,7 @@ export default function AdminNewUserPage() {
     setLoading(true);
 
     try {
-      await api.post('/users', { 
+      await createUser({ 
         name, 
         email, 
         password,
