@@ -79,29 +79,29 @@ export default function Login() {
   };
 
   return (
-    <>
-      <div className="p-8 md:p-12 max-w-md">
+    <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 p-4 md:p-8">
+      <div className="w-full max-w-md flex flex-col justify-center">
         <FlexContainer
           direction="row"
           gap="12"
           justify="center"
           align="center"
-          className="mb-12 max-w-96"
+          className="mb-8 w-full"
         >
-          <div>
+          <div className="flex justify-center">
             <Image
               src="/logos/logo-farmacia-digital.png"
-              width={200}
-              height={100}
+              width={160}
+              height={80}
               alt="Farmácia Digital"
               className="responsive-img rounded"
             />
           </div>
-          <div>
+          <div className="flex justify-center">
             <Image
               src="/logos/logo-secretaria.png"
-              width={200}
-              height={100}
+              width={160}
+              height={80}
               alt="Secretaria de Educação e Esportes"
               className="contrast-img responsive-img rounded"
             />
@@ -189,6 +189,6 @@ export default function Login() {
           </form>
         </Card>
       </div>
-    </>
+    </div>
   );
 }
