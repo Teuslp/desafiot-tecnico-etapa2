@@ -90,7 +90,7 @@ export default function Login() {
         >
           <div>
             <Image
-              src="/logos/logo-farmacia-digital.svg"
+              src="/logos/logo-farmacia-digital.png"
               width={200}
               height={100}
               alt="Farmácia Digital"
@@ -99,7 +99,7 @@ export default function Login() {
           </div>
           <div>
             <Image
-              src="/logos/logo-secretaria.svg"
+              src="/logos/logo-secretaria.png"
               width={200}
               height={100}
               alt="Secretaria de Educação e Esportes"
