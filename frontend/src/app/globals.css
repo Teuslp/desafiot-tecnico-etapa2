@@ -27,6 +27,36 @@
   --shadow-soft: 0 22px 60px -28px rgba(12, 50, 111, 0.28);
 }
 
+.dark {
+  --surface-page: #0b0f19;
+  --surface-card: rgba(15, 23, 42, 0.7);
+  --surface-muted: #1e293b;
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-primary: #38bdf8;
+  --accent-deep: #0ea5e9;
+  --accent-highlight: #f59e0b;
+  --shadow-soft: 0 22px 60px -28px rgba(0, 0, 0, 0.5);
+}
+
+.dark body {
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.06), transparent 26rem),
+    linear-gradient(180deg, #0b0f19 0%, #0f172a 48%, #111827 100%) !important;
+  color: var(--text-primary);
+}
+
+.dark .panel-card {
+  background: rgba(30, 41, 59, 0.7);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .field-shell {
+  background: linear-gradient(180deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.4));
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
 @layer base {
   html,
   body {

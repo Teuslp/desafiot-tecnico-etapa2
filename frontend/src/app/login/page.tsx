@@ -79,7 +79,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen w-full items-center justify-center bg-slate-50 p-4 md:p-8">
+    <div className="flex min-h-screen w-full items-center justify-center bg-transparent p-4 md:p-8">
       <div className="w-full max-w-md flex flex-col justify-center">
         <FlexContainer
           direction="row"
