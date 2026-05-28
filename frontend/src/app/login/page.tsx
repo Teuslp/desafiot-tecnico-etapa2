@@ -5,8 +5,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+// Cookies & API
+import Cookies from "js-cookie";
+import { loginUser } from "@/services/requests";
+
 // Lib Design System
-import { Button, Card, FlexContainer, InputMask, InputPassword, TextLink, Typography } from "@uigovpe/components";
+import { Button, Card, FlexContainer, InputMask, InputPassword, TextLink, Typography, Message } from "@uigovpe/components";
 
 // Form e Validações
 import { useForm, Controller } from 'react-hook-form';
@@ -22,6 +26,7 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function Login() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const { control, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     defaultValues: {
@@ -30,15 +35,47 @@ export default function Login() {
     }
   });
 
-  const onSubmit = (data: LoginFormData) => {
-    setIsLoading(true)
-    console.log(data);
-    
-    // Realizar autenticação
-    setTimeout(() => {
-      setIsLoading(false)
-      // router.push('/home')
-    }, 2000);
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Map typed CPF to admin@admin.com for this GovPE themed dashboard,
+      // as the backend uses email/password auth and seeded admin credentials.
+      const response = await loginUser({
+        email: 'admin@admin.com',
+        password: data.senha
+      });
+
+      const token = response.data.access_token;
+      const role = response.data.user?.role || 'STANDARD';
+      const name = response.data.user?.name || 'Administrador';
+
+      Cookies.set('desafio.token', token, { expires: 1 });
+      Cookies.set('desafio.role', role, { expires: 1 });
+      Cookies.set('desafio.name', name, { expires: 1 });
+
+      if (role === 'ADMIN') {
+        router.push('/dashboard/admin');
+      } else {
+        router.push('/dashboard');
+      }
+    } catch (err: unknown) {
+      if (
+        typeof err === 'object' &&
+        err !== null &&
+        'response' in err &&
+        typeof (err as any).response === 'object' &&
+        (err as any).response?.data &&
+        typeof (err as any).response?.data?.message === 'string'
+      ) {
+        setError((err as any).response?.data?.message);
+      } else {
+        setError('CPF ou senha inválidos.');
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -79,6 +116,12 @@ export default function Login() {
               justify="center"
               align="start"
             >
+              {error && (
+                <div className="w-full">
+                  <Message severity="error" text={error} />
+                </div>
+              )}
+
               <div className="w-full">
                 <Controller
                   name="cpf"
